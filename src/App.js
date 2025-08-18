@@ -16,6 +16,7 @@ import {
 import SendIcon from "@mui/icons-material/Send"
 import PersonIcon from "@mui/icons-material/Person"
 import SmartToyIcon from "@mui/icons-material/SmartToy"
+import { chat } from "./services/chatService"
 
 const theme = createTheme({
   palette: {
@@ -65,8 +66,9 @@ function App() {
     if (!inputValue.trim()) return
 
     const userMessage = {
-      id: Date.now(),
+      id: Date.now().toString(),
       text: inputValue,
+      query: inputValue,
       sender: "user",
       timestamp: new Date(),
     }
@@ -77,17 +79,30 @@ function App() {
     setInputValue("")
     setIsTyping(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    let res = await chat(userMessage)
+    //console.log(">> check response: ", res)
+
+    if (res && res.data && res.data.EC === 0) {
       const aiMessage = {
         id: Date.now() + 1,
-        text: "I understand your message. This is a simulated response from the AI assistant. In a real implementation, this would connect to an actual AI service.",
+        text: res.data.DT,
         sender: "ai",
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, aiMessage])
       setIsTyping(false)
-    }, 1500)
+    }
+    // Simulate AI response
+    // setTimeout(() => {
+    //   const aiMessage = {
+    //     id: Date.now() + 1,
+    //     text: "I understand your message. This is a simulated response from the AI assistant. In a real implementation, this would connect to an actual AI service.",
+    //     sender: "ai",
+    //     timestamp: new Date(),
+    //   }
+    //   setMessages((prev) => [...prev, aiMessage])
+    //   setIsTyping(false)
+    // }, 1500)
   }
 
   const handleKeyPress = (e) => {
