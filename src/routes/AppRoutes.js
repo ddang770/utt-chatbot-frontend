@@ -3,7 +3,7 @@ import {
   Route
 } from "react-router-dom";
 import HomeChat from '../components/HomeChat/HomeChat';
-import AdminDashboard from '../components/AdminDashboard/AdminDashboard';
+import AdminManager from '../components/AdminManager/AdminManager';
 //import PrivateRoutes from "./PrivateRoutes";
 
 const AppRoutes = (props) => {
@@ -13,7 +13,7 @@ const AppRoutes = (props) => {
         {/* <PrivateRoutes path="/users" component={Users} /> */}
 
         <Route path="/" element={<HomeChat />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminManager />} />
         {/* <Route path="/login" exact>
           <Login />
         </Route> */}
