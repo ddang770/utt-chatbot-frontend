@@ -2,8 +2,10 @@
 
 import { Box, Card, CardContent, Typography, Grid, Paper } from "@mui/material"
 import { People, Chat, Description, TrendingUp } from "@mui/icons-material"
+import { get_stats } from "../../services/adminService"
+import { useEffect, useState } from "react"
 
-// Mock data - replace with real data from your backend
+// real data from your backend
 const mockStats = {
   todayUsers: 142,
   totalUsers: 2847,
@@ -12,6 +14,22 @@ const mockStats = {
 }
 
 export function AdminDashboard() {
+
+  const [statsData, setStatsData] = useState({})
+
+  useEffect(() => {
+    getRealStats()
+  }, [])
+
+  const getRealStats = async () => {
+    let res = await get_stats()
+    let data = res.data
+    console.log(">> check data stats", data)
+    if (data && +data.EC === 0) {
+      setStatsData(data.DT)
+    }
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Box sx={{ mb: 4 }}>
@@ -35,7 +53,7 @@ export function AdminDashboard() {
                 <People color="action" />
               </Box>
               <Typography variant="h4" component="div">
-                {mockStats.todayUsers}
+                {statsData.todays_users?.toLocaleString() || "Loading..."}
               </Typography>
               <Typography variant="caption" color="success.main">
                 +12% from yesterday
@@ -54,7 +72,7 @@ export function AdminDashboard() {
                 <People color="action" />
               </Box>
               <Typography variant="h4" component="div">
-                {mockStats.totalUsers.toLocaleString()}
+                {statsData.total_users?.toLocaleString() || "Loading..."}
               </Typography>
               <Typography variant="caption" color="success.main">
                 +8% from last month
@@ -73,7 +91,7 @@ export function AdminDashboard() {
                 <Chat color="action" />
               </Box>
               <Typography variant="h4" component="div">
-                {mockStats.totalMessages.toLocaleString()}
+                {statsData.num_messages?.toLocaleString() || "Loading..."}
               </Typography>
               <Typography variant="caption" color="success.main">
                 +23% from last week

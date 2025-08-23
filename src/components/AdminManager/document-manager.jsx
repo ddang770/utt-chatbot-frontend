@@ -20,7 +20,7 @@ import {
   InputAdornment,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { get_document_file_name } from "../../services/chatService";
+import { get_document_file_name } from "../../services/adminService";
 
 // Mock document data
 // const mockDocuments = [

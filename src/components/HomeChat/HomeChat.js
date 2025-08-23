@@ -17,7 +17,8 @@ import SendIcon from "@mui/icons-material/Send"
 import PersonIcon from "@mui/icons-material/Person"
 //import SmartToyIcon from "@mui/icons-material/SmartToy"
 import "./HomeChat.css"
-import { chat } from "../../services/chatService"
+import { chat, getUserCookies } from "../../services/chatService"
+import { save_message } from "../../services/adminService"
 
 const theme = createTheme({
   palette: {
@@ -63,6 +64,21 @@ const HomeChat = () => {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    // kiểm tra cookie "user_id"
+    const existingUserId = getCookies("user_id");
+    if (!existingUserId) {
+      // chưa có cookie -> gọi API để server set
+      getUserCookies()
+    }
+  }, [])
+
+  const getCookies = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
@@ -92,6 +108,8 @@ const HomeChat = () => {
       }
       setMessages((prev) => [...prev, aiMessage])
       setIsTyping(false)
+
+      save_message(inputValue)
     }
 
     // Simulate AI response

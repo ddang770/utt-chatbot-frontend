@@ -1,13 +1,13 @@
-//import axios from "../config/axios";
-import axios from "axios";
+import axios from "../config/axios";
+//import axios from "axios";
 
+const getUserCookies = () => {
+  return axios.get("/ck");
+}
 
 const chat = (userQuery) => {
-  return axios.post("http://localhost:8000/chat", userQuery);
+  return axios.post("/chat", userQuery);
 }
 
-const get_document_file_name = () => {
-  return axios.get("http://localhost:8000/document_file");
-}
 
-export { chat, get_document_file_name }
+export { chat, getUserCookies }
