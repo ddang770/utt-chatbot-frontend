@@ -18,9 +18,11 @@ import {
   Menu,
   MenuItem,
   InputAdornment,
+  LinearProgress,
+  Alert,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { get_document_file_name } from "../../services/adminService";
+import { get_document_file_name, uploadDocument } from "../../services/adminService";
 
 // Mock document data
 // const mockDocuments = [
@@ -38,6 +40,11 @@ export function DocumentManager() {
   const [searchTerm, setSearchTerm] = useState("")
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedDoc, setSelectedDoc] = useState(null)
+  const [dragActive, setDragActive] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadError, setUploadError] = useState("")
+  const [uploadSuccess, setUploadSuccess] = useState("")
   const [documentData, setDocumentData] = useState([])
 
   const filteredDocuments = documentData.filter((doc) => doc.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -45,6 +52,98 @@ export function DocumentManager() {
   useEffect(() => {
     get_document()
   }, [])
+
+  const validateFile = (file) => {
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+      "text/markdown",
+    ]
+    const maxSize = 10 * 1024 * 1024 // 10MB
+
+    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt|md)$/i)) {
+      return "Unsupported file format. Please upload PDF, DOCX, TXT, or MD files."
+    }
+
+    if (file.size > maxSize) {
+      return "File size exceeds 10MB limit."
+    }
+
+    return null
+  }
+
+  const handleFileUpload = async (files) => {
+    setUploadError("")
+    setUploadSuccess("")
+
+    const fileArray = Array.from(files)
+
+    for (const file of fileArray) {
+      const error = validateFile(file)
+      if (error) {
+        setUploadError(error)
+        return;
+      }
+    }
+
+    setUploading(true)
+    setUploadProgress(0)
+
+    try {
+      // Call your API endpoint
+      const res = await uploadDocument(fileArray)
+
+      if (res && res.data && +res.data.EC === 0) {
+        setUploadProgress(100);
+        setUploadSuccess(`Successfully uploaded ${fileArray.length} file(s)`);
+        setTimeout(() => setUploadSuccess(""), 3000);
+      } else {
+        throw new Error(`Upload failed: ${res.data.EM}`)
+      }
+      // Optional: refresh document list or add new documents to state
+    } catch (error) {
+      setUploadError(`Upload failed: ${error.message}`)
+    } finally {
+      setUploading(false)
+      setUploadProgress(0)
+    }
+  }
+
+  const handleDrag = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true)
+    } else if (e.type === "dragleave") {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files)
+    }
+  }
+
+  const handleFileInputChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileUpload(e.target.files)
+    }
+  }
+
+  const get_document = async () => {
+    let res = await get_document_file_name()
+    let data = res.data
+    //console.log(">> check data docs", data)
+    if (data && +data.EC === 0) {
+      setDocumentData(data.DT)
+    }
+  }
 
   const handleMenuClick = (event, doc) => {
     setAnchorEl(event.currentTarget)
@@ -69,15 +168,6 @@ export function DocumentManager() {
     }
   }
 
-  const get_document = async () => {
-    let res = await get_document_file_name()
-    let data = res.data
-    //console.log(">> check data docs", data)
-    if (data && +data.EC === 0) {
-      setDocumentData(data.DT)
-    }
-  }
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Box sx={{ mb: 4 }}>
@@ -98,26 +188,64 @@ export function DocumentManager() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Supported formats: PDF, DOCX, TXT, MD
           </Typography>
+
+          {uploadError && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setUploadError("")}>
+              {uploadError}
+            </Alert>
+          )}
+
+          {uploadSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }} onClose={() => setUploadSuccess("")}>
+              {uploadSuccess}
+            </Alert>
+          )}
+
           <Paper
             sx={{
               border: "2px dashed",
-              borderColor: "grey.300",
+              borderColor: dragActive ? "primary.main" : "grey.300",
               borderRadius: 2,
               p: 6,
               textAlign: "center",
-              bgcolor: "grey.50",
+              bgcolor: dragActive ? "primary.50" : "grey.50",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
             }}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => document.getElementById("file-input").click()}
           >
-            <CloudUpload sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
+            <input
+              id="file-input"
+              type="file"
+              multiple
+              accept=".pdf,.docx,.txt,.md"
+              onChange={handleFileInputChange}
+              style={{ display: "none" }}
+            />
+
+            <CloudUpload sx={{ fontSize: 48, color: dragActive ? "primary.main" : "text.secondary", mb: 2 }} />
             <Typography variant="h6" gutterBottom>
               Drop files here or click to upload
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Maximum file size: 10MB
             </Typography>
-            <Button variant="contained" startIcon={<CloudUpload />}>
-              Choose Files
+            <Button variant="contained" startIcon={<CloudUpload />} disabled={uploading}>
+              {uploading ? "Uploading..." : "Choose Files"}
             </Button>
+
+            {uploading && (
+              <Box sx={{ mt: 3 }}>
+                <LinearProgress variant="determinate" value={uploadProgress} />
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  {uploadProgress}% uploaded
+                </Typography>
+              </Box>
+            )}
           </Paper>
         </CardContent>
       </Card>
