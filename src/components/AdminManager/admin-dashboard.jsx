@@ -110,7 +110,7 @@ export function AdminDashboard() {
                 <Description color="action" />
               </Box>
               <Typography variant="h4" component="div">
-                {mockStats.totalDocuments}
+                {statsData.num_documents}
               </Typography>
               <Typography variant="caption" color="success.main">
                 +3 this week

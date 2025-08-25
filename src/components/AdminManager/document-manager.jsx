@@ -22,7 +22,7 @@ import {
   Alert,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { get_document_file_name, uploadDocument } from "../../services/adminService";
+import { get_document_file_name, uploadDocument, deleteDocument, downloadDocument } from "../../services/adminService";
 
 // Mock document data
 // const mockDocuments = [
@@ -98,6 +98,7 @@ export function DocumentManager() {
         setUploadProgress(100);
         setUploadSuccess(`Successfully uploaded ${fileArray.length} file(s)`);
         setTimeout(() => setUploadSuccess(""), 3000);
+        get_document()
       } else {
         throw new Error(`Upload failed: ${res.data.EM}`)
       }
@@ -153,6 +154,24 @@ export function DocumentManager() {
   const handleMenuClose = () => {
     setAnchorEl(null)
     setSelectedDoc(null)
+  }
+
+  const handleDownloadDoc = async (docId) => {
+    // goi api & handle close
+    // const res = await downloadDocument(docId)
+    // if (res && res.data && +res.data.EC === 0) {
+    //   handleMenuClose()
+    // }
+  }
+
+  const handleDeleteDoc = async (docId) => {
+    // goi api & handle close
+    const res = await deleteDocument(docId)
+    if (res && res.data && +res.data.EC === 0) {
+      handleMenuClose()
+      // goi lai api de refresh data
+      get_document()
+    }
   }
 
   const getStatusColor = (status) => {
@@ -272,34 +291,46 @@ export function DocumentManager() {
           </Box>
 
           <List>
-            {filteredDocuments.map((doc, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  border: 1,
-                  borderColor: "grey.200",
-                  borderRadius: 1,
-                  mb: 1,
-                  "&:hover": { bgcolor: "grey.50" },
-                }}
-              >
-                <ListItemIcon>
-                  <Paper sx={{ p: 1, bgcolor: "grey.100" }}>
-                    <Description color="action" />
-                  </Paper>
-                </ListItemIcon>
-                <ListItemText primary={doc.name} secondary={`${doc.size} • Uploaded ${doc.uploadDate}`} />
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Chip label={doc.status} color={getStatusColor(doc.status)} size="small" />
-                  <IconButton onClick={(e) => handleMenuClick(e, doc)}>
-                    <MoreVert />
-                  </IconButton>
-                </Box>
-              </ListItem>
+            {filteredDocuments.map((doc) => (
+              <>
+                <ListItem
+                  key={doc.id}
+                  sx={{
+                    border: 1,
+                    borderColor: "grey.200",
+                    borderRadius: 1,
+                    mb: 1,
+                    "&:hover": { bgcolor: "grey.50" },
+                  }}
+                >
+                  <ListItemIcon>
+                    <Paper sx={{ p: 1, bgcolor: "grey.100" }}>
+                      <Description color="action" />
+                    </Paper>
+                  </ListItemIcon>
+                  <ListItemText primary={doc.name} secondary={`${doc.size} • Uploaded ${doc.uploadDate}`} />
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Chip label={doc.status} color={getStatusColor(doc.status)} size="small" />
+                    <IconButton onClick={(e) => handleMenuClick(e, doc)}>
+                      <MoreVert />
+                    </IconButton>
+                  </Box>
+                </ListItem>
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                  <MenuItem onClick={() => handleDownloadDoc(doc.id)}>
+                    <Download sx={{ mr: 1 }} />
+                    Download
+                  </MenuItem>
+                  <MenuItem onClick={() => handleDeleteDoc(selectedDoc?.id)} sx={{ color: "error.main" }}>
+                    <Delete sx={{ mr: 1 }} />
+                    Delete
+                  </MenuItem>
+                </Menu>
+              </>
             ))}
           </List>
 
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          {/* <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={handleMenuClose}>
               <Download sx={{ mr: 1 }} />
               Download
@@ -308,7 +339,7 @@ export function DocumentManager() {
               <Delete sx={{ mr: 1 }} />
               Delete
             </MenuItem>
-          </Menu>
+          </Menu> */}
         </CardContent>
       </Card>
     </Box>

@@ -2,7 +2,7 @@ import axios from "../config/axios";
 //import axios from "axios";
 
 const get_document_file_name = () => {
-  return axios.get("/document_file");
+  return axios.get("/admin/document/read");
 }
 
 const save_message = (msg) => {
@@ -27,4 +27,12 @@ const uploadDocument = (files) => {
   })
 }
 
-export { get_document_file_name, save_message, get_stats, uploadDocument }
+const deleteDocument = (docID) => {
+  return axios.post("/admin/document/delete", { id: docID })
+}
+
+const downloadDocument = (docID) => {
+  return axios.post("/admin/document/download", { id: docID })
+}
+
+export { get_document_file_name, save_message, get_stats, uploadDocument, deleteDocument, downloadDocument }
