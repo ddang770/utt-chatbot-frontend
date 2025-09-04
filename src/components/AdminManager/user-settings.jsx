@@ -3,20 +3,39 @@
 import { useState } from "react"
 import { Box, Card, CardContent, Typography, Button, TextField, Divider, Grid } from "@mui/material"
 import { Lock, Logout, Person } from "@mui/icons-material"
+import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
 
 export function UserSettings() {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const { update_password, logout } = useAuth();
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault()
-    // Handle password change logic here
+    // Handle password change
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    const res = await update_password(currentPassword, newPassword)
+    if (res && res.data && +res.data.EC === 0) {
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+      toast.success(res.data.EM)
+    }
+    if (res && res.data && +res.data.EC === 1) {
+      setCurrentPassword("")
+      toast.error(res.data.EM)
+    }
     console.log("Password change requested")
   }
 
-  const handleLogout = () => {
-    // Handle logout logic here
+  const handleLogout = async () => {
+    // Handle logout
+    await logout()
     console.log("Logout requested")
   }
 

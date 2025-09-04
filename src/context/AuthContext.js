@@ -66,8 +66,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const update_password = async (currentPassword, newPassword) => {
+    try {
+      return await axios.post('http://localhost:8000/admin/change-password', {
+        current_password: currentPassword,
+        new_password: newPassword
+      });
+    } catch (error) {
+      console.error('Update password failed:', error);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, update_password, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

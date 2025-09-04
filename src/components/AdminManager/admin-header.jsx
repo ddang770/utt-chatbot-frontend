@@ -1,13 +1,13 @@
 "use client"
 
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Avatar, Divider } from "@mui/material"
-import { Settings, Logout } from "@mui/icons-material"
-import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Avatar, Divider, Box } from "@mui/material"
+import { Settings, Logout, Menu as MenuIcon } from "@mui/icons-material"
 import { useState } from "react"
 
 export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
+  const [username] = useState("Admin") // You can replace this with actual user data
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -28,9 +28,14 @@ export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
           Chatbot Administration
         </Typography>
 
-        <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
-          <Avatar sx={{ width: 40, height: 40, bgcolor: "primary.main" }}>AD</Avatar>
-        </IconButton>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Hi, {username}!
+          </Typography>
+          <IconButton onClick={handleClick} size="small">
+            <Avatar sx={{ width: 40, height: 40, bgcolor: "primary.main" }}>AD</Avatar>
+          </IconButton>
+        </Box>
 
         <Menu
           anchorEl={anchorEl}
