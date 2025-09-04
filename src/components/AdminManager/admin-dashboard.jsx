@@ -1,5 +1,3 @@
-"use client"
-
 import { Box, Card, CardContent, Typography, Grid, Paper } from "@mui/material"
 import { People, Chat, Description, TrendingUp } from "@mui/icons-material"
 

@@ -1,16 +1,15 @@
-"use client"
-
 import { useState } from "react"
 import { Box, Card, CardContent, Typography, Button, TextField, Divider, Grid } from "@mui/material"
 import { Lock, Logout, Person } from "@mui/icons-material"
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
 
 export function UserSettings() {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const { update_password, logout } = useAuth();
+  const { update_password, logout, user } = useAuth();
 
   const handlePasswordChange = async (e) => {
     e.preventDefault()
@@ -66,15 +65,15 @@ export function UserSettings() {
                 Username
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                admin
+                {user.username}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle2" gutterBottom>
-                Role
+                Email
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Administrator
+                {user.email}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -82,7 +81,8 @@ export function UserSettings() {
                 Last Login
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                January 15, 2024 at 2:30 PM
+                {/* January 15, 2024 at 2:30 PM */}
+                {format(new Date(user.last_login), 'PPpp')}
               </Typography>
             </Grid>
           </Grid>

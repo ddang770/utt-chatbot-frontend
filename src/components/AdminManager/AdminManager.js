@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material"
 import { AdminSidebar } from "./admin-sidebar"
