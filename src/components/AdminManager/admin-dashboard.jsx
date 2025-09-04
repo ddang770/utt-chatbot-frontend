@@ -2,33 +2,18 @@
 
 import { Box, Card, CardContent, Typography, Grid, Paper } from "@mui/material"
 import { People, Chat, Description, TrendingUp } from "@mui/icons-material"
-import { get_stats } from "../../services/adminService"
-import { useEffect, useState } from "react"
 
 // real data from your backend
-const mockStats = {
-  todayUsers: 142,
-  totalUsers: 2847,
-  totalMessages: 15632,
-  totalDocuments: 89,
-}
+// const mockStats = {
+//   todayUsers: 142,
+//   totalUsers: 2847,
+//   totalMessages: 15632,
+//   totalDocuments: 89,
+// }
 
-export function AdminDashboard() {
+export function AdminDashboard(props) {
 
-  const [statsData, setStatsData] = useState({})
-
-  useEffect(() => {
-    getRealStats()
-  }, [])
-
-  const getRealStats = async () => {
-    let res = await get_stats()
-    let data = res.data
-    console.log(">> check data stats", data)
-    if (data && +data.EC === 0) {
-      setStatsData(data.DT)
-    }
-  }
+  let { statsData } = props
 
   return (
     <Box sx={{ flexGrow: 1 }}>

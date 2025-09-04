@@ -15,8 +15,10 @@ import {
   CssBaseline,
 } from "@mui/material"
 import { Lock, Person } from "@mui/icons-material"
+import { InputAdornment } from "@mui/material";
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+//import { toast } from 'react-toastify';
 
 const theme = createTheme({
   palette: {
@@ -100,7 +102,7 @@ export default function AdminLogin() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
-  const { user, login, logout } = useAuth();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -129,16 +131,15 @@ export default function AdminLogin() {
     }
 
     try {
-      console.log("Login attempt:", formData)
+      //console.log("Login attempt:", formData)
 
-      // Simulate API call
-      // await new Promise((resolve) => setTimeout(resolve, 1000))
-
+      // call API
       const success = await login(formData.email, formData.password);
       if (success) {
         navigate('/admin/dashboard');
       } else {
-        setError('Invalid credentials');
+        //toast.error("Email or password is not correct!")
+        setError('Email or password is not correct!');
       }
     } catch (err) {
       setError("Login failed. Please try again.")
@@ -146,6 +147,11 @@ export default function AdminLogin() {
       setLoading(false)
     }
   }
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   alert("Form submitted but prevented!");
+  // }
 
   return (
     <ThemeProvider theme={theme}>
@@ -204,7 +210,11 @@ export default function AdminLogin() {
                   margin="normal"
                   required
                   InputProps={{
-                    startAdornment: <Person sx={{ color: "text.secondary", mr: 1 }} />,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Person sx={{ color: "text.secondary", mr: 1 }} />
+                      </InputAdornment>
+                    ),
                   }}
                 />
 
@@ -218,7 +228,11 @@ export default function AdminLogin() {
                   margin="normal"
                   required
                   InputProps={{
-                    startAdornment: <Lock sx={{ color: "text.secondary", mr: 1 }} />,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock sx={{ color: "text.secondary", mr: 1 }} />
+                      </InputAdornment>
+                    ),
                   }}
                 />
 

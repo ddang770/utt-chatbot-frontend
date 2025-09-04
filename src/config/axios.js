@@ -25,7 +25,6 @@ instance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/admin/login';
     }
     return Promise.reject(error);
   }

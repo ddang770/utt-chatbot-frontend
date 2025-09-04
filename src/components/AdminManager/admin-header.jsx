@@ -1,13 +1,14 @@
-"use client"
-
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Avatar, Divider, Box } from "@mui/material"
 import { Settings, Logout, Menu as MenuIcon } from "@mui/icons-material"
 import { useState } from "react"
+import { useAuth } from '../../context/AuthContext' // Add this import
+import { useNavigate } from 'react-router-dom' // Add this import
 
 export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
-  const [username] = useState("Admin") // You can replace this with actual user data
+  const { user, logout } = useAuth() // Get user from context
+  const navigate = useNavigate()
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -15,6 +16,16 @@ export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/admin/login')
+  }
+
+  // Get first letter of username for Avatar
+  const getInitials = (name) => {
+    return name ? name.charAt(0).toUpperCase() : 'A'
   }
 
   return (
@@ -30,10 +41,12 @@ export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Hi, {username}!
+            Hi, {user?.username || 'username'}!
           </Typography>
           <IconButton onClick={handleClick} size="small">
-            <Avatar sx={{ width: 40, height: 40, bgcolor: "primary.main" }}>AD</Avatar>
+            <Avatar sx={{ width: 40, height: 40, bgcolor: "primary.main" }}>
+              {getInitials(user?.username)}
+            </Avatar>
           </IconButton>
         </Box>
 
@@ -59,7 +72,7 @@ export function AdminHeader({ sidebarCollapsed, onToggleSidebar }) {
             Change Password
           </MenuItem>
           <Divider />
-          <MenuItem onClick={handleClose} sx={{ color: "error.main" }}>
+          <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
             <Logout sx={{ mr: 2 }} fontSize="small" />
             Logout
           </MenuItem>

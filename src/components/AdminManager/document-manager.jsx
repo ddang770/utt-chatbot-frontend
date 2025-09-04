@@ -1,6 +1,4 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Box,
   Card,
@@ -22,7 +20,7 @@ import {
   Alert,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { get_document_file_name, uploadDocument, deleteDocument, downloadDocument } from "../../services/adminService";
+import { uploadDocument, deleteDocument } from "../../services/adminService";
 
 // Mock document data
 // const mockDocuments = [
@@ -36,7 +34,7 @@ import { get_document_file_name, uploadDocument, deleteDocument, downloadDocumen
 //   }
 // ]
 
-export function DocumentManager() {
+export function DocumentManager({ documentData, get_document }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedDoc, setSelectedDoc] = useState(null)
@@ -45,13 +43,9 @@ export function DocumentManager() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadError, setUploadError] = useState("")
   const [uploadSuccess, setUploadSuccess] = useState("")
-  const [documentData, setDocumentData] = useState([])
 
   const filteredDocuments = documentData.filter((doc) => doc.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
-  useEffect(() => {
-    get_document()
-  }, [])
 
   const validateFile = (file) => {
     const allowedTypes = [
@@ -134,15 +128,6 @@ export function DocumentManager() {
   const handleFileInputChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       handleFileUpload(e.target.files)
-    }
-  }
-
-  const get_document = async () => {
-    let res = await get_document_file_name()
-    let data = res.data
-    //console.log(">> check data docs", data)
-    if (data && +data.EC === 0) {
-      setDocumentData(data.DT)
     }
   }
 

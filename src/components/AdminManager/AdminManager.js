@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material"
 import { AdminSidebar } from "./admin-sidebar"
 import { AdminHeader } from "./admin-header"
 import { AdminDashboard } from "./admin-dashboard"
 import { DocumentManager } from "./document-manager"
 import { UserSettings } from "./user-settings"
+
+import { get_stats } from "../../services/adminService"
+import { get_document_file_name } from "../../services/adminService";
 
 const theme = createTheme({
   palette: {
@@ -79,13 +82,38 @@ const theme = createTheme({
 const AdminManager = () => {
   const [activeSection, setActiveSection] = useState("dashboard")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [statsData, setStatsData] = useState({})
+  const [documentData, setDocumentData] = useState([])
+
+  useEffect(() => {
+    getRealStats()
+    get_document()
+  }, [])
+
+  const getRealStats = async () => {
+    let res = await get_stats()
+    let data = res.data
+    //console.log(">> check data stats", data)
+    if (data && +data.EC === 0) {
+      setStatsData(data.DT)
+    }
+  }
+
+  const get_document = async () => {
+    let res = await get_document_file_name()
+    let data = res.data
+    //console.log(">> check data docs", data)
+    if (data && +data.EC === 0) {
+      setDocumentData(data.DT)
+    }
+  }
 
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <AdminDashboard />
+        return <AdminDashboard statsData={statsData} />
       case "documents":
-        return <DocumentManager />
+        return <DocumentManager documentData={documentData} get_document={get_document} />
       case "settings":
         return <UserSettings />
       default:

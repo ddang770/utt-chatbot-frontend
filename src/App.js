@@ -11,26 +11,24 @@ import { AuthProvider } from './context/AuthContext';
 const App = () => {
 
   return (
-    <>
+    <Router>
       <AuthProvider>
-        <Router>
-          <div className='app-container'>
-            <AppRoutes />
-          </div>
-          <ToastContainer
-            position="bottom-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </Router>
+        <div className='app-container'>
+          <AppRoutes />
+        </div>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </AuthProvider>
-    </>
+    </Router>
   );
 }
 
