@@ -20,7 +20,7 @@ import {
   Alert,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { uploadDocument, deleteDocument } from "../../services/adminService";
+import { uploadDocument, deleteDocument, viewDocument } from "../../services/adminService";
 import { toast } from 'react-toastify';
 
 // Mock document data
@@ -143,12 +143,18 @@ export function DocumentManager({ documentData, get_document }) {
     setSelectedDoc(null)
   }
 
-  const handleDownloadDoc = async (docId) => {
-    // goi api & handle close
-    // const res = await downloadDocument(docId)
-    // if (res && res.data && +res.data.EC === 0) {
-    //   handleMenuClose()
-    // }
+  const handleViewDoc = async (docId) => {
+    //goi api & handle close
+    const res = await viewDocument(docId)
+    if (res && res.data && +res.data.EC === 0) {
+      handleMenuClose()
+      if (res && res.data && +res.data.EC === 0) {
+        const signedUrl = res.data.DT.url;
+        window.open("http://localhost:8000" + signedUrl, "_blank");
+      } else {
+        toast.error("Something wrong with viewing doc...")
+      }
+    }
   }
 
   const handleDeleteDoc = async (docId) => {
@@ -305,9 +311,9 @@ export function DocumentManager({ documentData, get_document }) {
                   </Box>
                 </ListItem>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                  <MenuItem onClick={() => handleDownloadDoc(doc.id)}>
+                  <MenuItem onClick={() => handleViewDoc(selectedDoc?.id)}>
                     <Download sx={{ mr: 1 }} />
-                    Download
+                    View
                   </MenuItem>
                   <MenuItem onClick={() => handleDeleteDoc(selectedDoc?.id)} sx={{ color: "error.main" }}>
                     <Delete sx={{ mr: 1 }} />

@@ -35,4 +35,16 @@ const downloadDocument = (docID) => {
   return axios.post("/admin/document/download", { id: docID })
 }
 
-export { get_document_file_name, save_message, get_stats, uploadDocument, deleteDocument, downloadDocument }
+
+const viewDocument = async (docId) => {
+  const authToken = localStorage.getItem("token");
+  return await axios.get(`/admin/documents/${docId}/generate_link`, {
+    headers: { Authorization: `Bearer ${authToken}` }
+  });
+};
+
+export {
+  get_document_file_name,
+  save_message, get_stats, uploadDocument, deleteDocument,
+  downloadDocument, viewDocument
+}
