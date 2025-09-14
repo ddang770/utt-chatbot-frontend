@@ -1,5 +1,6 @@
-import { Box, Card, CardContent, Typography, Grid, Paper } from "@mui/material"
-import { People, Chat, Description, TrendingUp } from "@mui/icons-material"
+import { Box, Card, CardContent, Typography, Grid, Paper, Button } from "@mui/material"
+import { People, Chat, Description, TrendingUp, Refresh } from "@mui/icons-material"
+import { useState } from "react"
 
 // real data from your backend
 // const mockStats = {
@@ -11,17 +12,34 @@ import { People, Chat, Description, TrendingUp } from "@mui/icons-material"
 
 export function AdminDashboard(props) {
 
-  let { statsData } = props
+  let { statsData, onRefresh } = props
+  const [loading, setLoading] = useState(false)
+
+  const handleRefresh = async () => {
+    setLoading(true)
+    await onRefresh()
+    setLoading(false)
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          Dashboard Overview
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Monitor your chatbot's performance and user engagement
-        </Typography>
+        <div>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Dashboard Overview
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Monitor your chatbot's performance and user engagement
+          </Typography>
+        </div>
+        <Button
+          variant="contained"
+          startIcon={<Refresh />}
+          onClick={handleRefresh}
+          disabled={loading}
+        >
+          {loading ? "Refreshing..." : "Refresh"}
+        </Button>
       </Box>
 
       {/* Stats Cards */}

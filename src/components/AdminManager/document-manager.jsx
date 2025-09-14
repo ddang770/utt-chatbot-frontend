@@ -21,6 +21,7 @@ import {
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
 import { uploadDocument, deleteDocument } from "../../services/adminService";
+import { toast } from 'react-toastify';
 
 // Mock document data
 // const mockDocuments = [
@@ -92,6 +93,7 @@ export function DocumentManager({ documentData, get_document }) {
         setUploadProgress(100);
         setUploadSuccess(`Successfully uploaded ${fileArray.length} file(s)`);
         setTimeout(() => setUploadSuccess(""), 3000);
+        toast.success(res.data.EM);
         get_document()
       } else {
         throw new Error(`Upload failed: ${res.data.EM}`)
@@ -154,6 +156,7 @@ export function DocumentManager({ documentData, get_document }) {
     const res = await deleteDocument(docId)
     if (res && res.data && +res.data.EC === 0) {
       handleMenuClose()
+      toast.success(res.data.EM);
       // goi lai api de refresh data
       get_document()
     }

@@ -109,7 +109,7 @@ const AdminManager = () => {
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <AdminDashboard statsData={statsData} />
+        return <AdminDashboard statsData={statsData} onRefresh={getRealStats} />
       case "documents":
         return <DocumentManager documentData={documentData} get_document={get_document} />
       case "settings":
