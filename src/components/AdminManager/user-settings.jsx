@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Box, Card, CardContent, Typography, Button, TextField, Divider, Grid } from "@mui/material"
-import { Lock, Logout, Person } from "@mui/icons-material"
+import { Lock, Logout, Person, PersonAdd } from "@mui/icons-material"
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
@@ -9,7 +9,12 @@ export function UserSettings() {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const { update_password, logout, user } = useAuth();
+  const [newAdminEmail, setNewAdminEmail] = useState("")
+  const [newAdminUsername, setNewAdminUsername] = useState("")
+  const [newAdminPassword, setNewAdminPassword] = useState("")
+  const [newAdminConfirmPassword, setNewAdminConfirmPassword] = useState("")
+
+  const { update_password, logout, user, createNewUser } = useAuth();
 
   const handlePasswordChange = async (e) => {
     e.preventDefault()
@@ -29,13 +34,48 @@ export function UserSettings() {
       setCurrentPassword("")
       toast.error(res.data.EM)
     }
-    console.log("Password change requested")
+    //console.log("Password change requested")
   }
 
   const handleLogout = async () => {
     // Handle logout
     await logout()
-    console.log("Logout requested")
+    //console.log("Logout requested")
+  }
+
+  const handleCreateAdmin = async (e) => {
+    e.preventDefault()
+    if (newAdminPassword !== newAdminConfirmPassword) {
+      toast.error("Passwords do not match")
+      setNewAdminPassword("")
+      setNewAdminConfirmPassword("")
+      return
+    }
+    // email regex check
+    let regex = /^\S+@\S+\.\S+$/;
+    if (!regex.test(newAdminEmail)) {
+      toast.error("Please enter a valid email")
+      setNewAdminEmail("")
+      setNewAdminPassword("")
+      setNewAdminConfirmPassword("")
+      return
+    }
+    // Handle create admin
+    const res = await createNewUser({
+      email: newAdminEmail,
+      username: newAdminUsername,
+      password: newAdminPassword
+    })
+    if (res && res.data && +res.data.EC == 0) {
+      toast.success(res.data.EM)
+    }
+    if (res && res.status == 500) {
+      toast.error(res.detail)
+    }
+    setNewAdminUsername("")
+    setNewAdminEmail("")
+    setNewAdminPassword("")
+    setNewAdminConfirmPassword("")
   }
 
   return (
@@ -130,6 +170,58 @@ export function UserSettings() {
             />
             <Button type="submit" variant="contained" fullWidth>
               Update Password
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+            <PersonAdd />
+            <Typography variant="h6">Create New Admin Account</Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Create a new administrator account for the system
+          </Typography>
+          <Box component="form" onSubmit={handleCreateAdmin} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <TextField
+              label="Admin Email"
+              type="email"
+              value={newAdminEmail}
+              onChange={(e) => setNewAdminEmail(e.target.value)}
+              placeholder="Enter email for new admin"
+              fullWidth
+              required
+            />
+            <TextField
+              label="Admin Username"
+              value={newAdminUsername}
+              onChange={(e) => setNewAdminUsername(e.target.value)}
+              placeholder="Enter username for new admin"
+              fullWidth
+              required
+            />
+            <TextField
+              label="Admin Password"
+              type="password"
+              value={newAdminPassword}
+              onChange={(e) => setNewAdminPassword(e.target.value)}
+              placeholder="Enter password for new admin"
+              fullWidth
+              required
+            />
+            <TextField
+              label="Confirm Admin Password"
+              type="password"
+              value={newAdminConfirmPassword}
+              onChange={(e) => setNewAdminConfirmPassword(e.target.value)}
+              placeholder="Confirm password for new admin"
+              fullWidth
+              required
+            />
+            <Button type="submit" variant="contained" fullWidth startIcon={<PersonAdd />}>
+              Create Admin Account
             </Button>
           </Box>
         </CardContent>

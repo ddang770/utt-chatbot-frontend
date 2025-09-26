@@ -5,6 +5,8 @@ import { AdminHeader } from "./admin-header"
 import { AdminDashboard } from "./admin-dashboard"
 import { DocumentManager } from "./document-manager"
 import { UserSettings } from "./user-settings"
+import { ChatbotSettings } from "./chatbot-settings"
+import { PromptTemplateManager } from "./prompt-template-manager"
 
 import { get_stats } from "../../services/adminService"
 import { get_document_file_name } from "../../services/adminService";
@@ -82,16 +84,39 @@ const AdminManager = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [statsData, setStatsData] = useState({})
   const [documentData, setDocumentData] = useState([])
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  // Lấy ngày đầu tháng và ngày hiện tại
+  const getDefaultDateRange = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-based
+    const firstDay = new Date(year, month, 1);
+    // Format YYYY-MM-DD
+    const format = (d) => d.toISOString().slice(0, 10);
+
+    return {
+      startDate: format(firstDay),
+      endDate: format(now),
+    };
+  };
+  // set default dateRange
+  const [dateRange, setDateRange] = useState(getDefaultDateRange())
 
   useEffect(() => {
-    getRealStats()
-    get_document()
-  }, [])
+    getRealStats({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    });
+  }, [dateRange, refreshKey])
 
-  const getRealStats = async () => {
-    let res = await get_stats()
+  useEffect(() => {
+    get_document()
+  }, []);
+
+  const getRealStats = async ({ startDate, endDate }) => {
+    let res = await get_stats({ startDate, endDate })
     let data = res.data
-    //console.log(">> check data stats", data)
     if (data && +data.EC === 0) {
       setStatsData(data.DT)
     }
@@ -100,7 +125,6 @@ const AdminManager = () => {
   const get_document = async () => {
     let res = await get_document_file_name()
     let data = res.data
-    //console.log(">> check data docs", data)
     if (data && +data.EC === 0) {
       setDocumentData(data.DT)
     }
@@ -109,9 +133,13 @@ const AdminManager = () => {
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <AdminDashboard statsData={statsData} onRefresh={getRealStats} />
+        return <AdminDashboard statsData={statsData} dateRange={dateRange} setDateRange={setDateRange} />
       case "documents":
         return <DocumentManager documentData={documentData} get_document={get_document} />
+      case "prompt-templates":
+        return <PromptTemplateManager />
+      case "chatbot-settings":
+        return <ChatbotSettings />
       case "settings":
         return <UserSettings />
       default:

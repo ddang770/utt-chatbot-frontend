@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from '../config/axios';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext({});
 
@@ -77,8 +78,27 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const createNewUser = async ({ email, username, password }) => {
+    try {
+      // const params = {};
+      // if (email) params.email = email;
+      // if (username) params.username = username;
+      // if (password) params.password = password;
+      return await axios.post('http://localhost:8000/admin/register', {
+        email,
+        username,
+        password,
+      });
+    } catch (error) {
+      if (error.response.status == 500) {
+        toast.error(error.response.data.detail)
+      }
+      console.error('Update password failed:', error);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, update_password, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, update_password, loading, createNewUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

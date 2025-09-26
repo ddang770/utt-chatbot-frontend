@@ -9,8 +9,12 @@ const save_message = (msg) => {
   return axios.post("/admin/message", { message: msg })
 }
 
-const get_stats = () => {
-  return axios.get("/admin/stats")
+const get_stats = ({ startDate, endDate }) => {
+  const params = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+
+  return axios.get("/admin/stats", { params });
 }
 
 const uploadDocument = (files) => {

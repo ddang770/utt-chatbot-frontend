@@ -18,22 +18,12 @@ import {
   InputAdornment,
   LinearProgress,
   Alert,
+  Pagination,
+  Stack,
 } from "@mui/material"
 import { CloudUpload, Description, Search, MoreVert, Download, Delete } from "@mui/icons-material"
-import { uploadDocument, deleteDocument, viewDocument } from "../../services/adminService";
-import { toast } from 'react-toastify';
-
-// Mock document data
-// const mockDocuments = [
-//   {
-//     id: 1,
-//     name: "Product Manual v2.1.pdf",
-//     size: "2.4 MB",
-//     uploadDate: "2024-01-15",
-//     status: "processed",
-//     type: "PDF",
-//   }
-// ]
+import { uploadDocument, deleteDocument, viewDocument } from "../../services/adminService"
+import { toast } from "react-toastify"
 
 export function DocumentManager({ documentData, get_document }) {
   const [searchTerm, setSearchTerm] = useState("")
@@ -44,9 +34,24 @@ export function DocumentManager({ documentData, get_document }) {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadError, setUploadError] = useState("")
   const [uploadSuccess, setUploadSuccess] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(5) // Show 5 documents per page
 
   const filteredDocuments = documentData.filter((doc) => doc.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
+  const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedDocuments = filteredDocuments.slice(startIndex, endIndex)
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value)
+  }
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
+    setCurrentPage(1)
+  }
 
   const validateFile = (file) => {
     const allowedTypes = [
@@ -78,7 +83,7 @@ export function DocumentManager({ documentData, get_document }) {
       const error = validateFile(file)
       if (error) {
         setUploadError(error)
-        return;
+        return
       }
     }
 
@@ -90,10 +95,10 @@ export function DocumentManager({ documentData, get_document }) {
       const res = await uploadDocument(fileArray)
 
       if (res && res.data && +res.data.EC === 0) {
-        setUploadProgress(100);
-        setUploadSuccess(`Successfully uploaded ${fileArray.length} file(s)`);
-        setTimeout(() => setUploadSuccess(""), 3000);
-        toast.success(res.data.EM);
+        setUploadProgress(100)
+        setUploadSuccess(`Successfully uploaded ${fileArray.length} file(s)`)
+        setTimeout(() => setUploadSuccess(""), 3000)
+        toast.success(res.data.EM)
         get_document()
       } else {
         throw new Error(`Upload failed: ${res.data.EM}`)
@@ -149,8 +154,8 @@ export function DocumentManager({ documentData, get_document }) {
     if (res && res.data && +res.data.EC === 0) {
       handleMenuClose()
       if (res && res.data && +res.data.EC === 0) {
-        const signedUrl = res.data.DT.url;
-        window.open("http://localhost:8000" + signedUrl, "_blank");
+        const signedUrl = res.data.DT.url
+        window.open("http://localhost:8000" + signedUrl, "_blank")
       } else {
         toast.error("Something wrong with viewing doc...")
       }
@@ -162,7 +167,7 @@ export function DocumentManager({ documentData, get_document }) {
     const res = await deleteDocument(docId)
     if (res && res.data && +res.data.EC === 0) {
       handleMenuClose()
-      toast.success(res.data.EM);
+      toast.success(res.data.EM)
       // goi lai api de refresh data
       get_document()
     }
@@ -271,7 +276,7 @@ export function DocumentManager({ documentData, get_document }) {
             <TextField
               placeholder="Search documents..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
               size="small"
               sx={{ maxWidth: 300 }}
               InputProps={{
@@ -285,7 +290,7 @@ export function DocumentManager({ documentData, get_document }) {
           </Box>
 
           <List>
-            {filteredDocuments.map((doc) => (
+            {paginatedDocuments.map((doc) => (
               <>
                 <ListItem
                   key={doc.id}
@@ -310,7 +315,7 @@ export function DocumentManager({ documentData, get_document }) {
                     </IconButton>
                   </Box>
                 </ListItem>
-                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                <Menu key={selectedDoc?.id} anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                   <MenuItem onClick={() => handleViewDoc(selectedDoc?.id)}>
                     <Download sx={{ mr: 1 }} />
                     View
@@ -324,16 +329,22 @@ export function DocumentManager({ documentData, get_document }) {
             ))}
           </List>
 
-          {/* <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-            <MenuItem onClick={handleMenuClose}>
-              <Download sx={{ mr: 1 }} />
-              Download
-            </MenuItem>
-            <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
-              <Delete sx={{ mr: 1 }} />
-              Delete
-            </MenuItem>
-          </Menu> */}
+          {totalPages > 1 && (
+            <Stack spacing={2} alignItems="center" sx={{ mt: 3 }}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                showFirstButton
+                showLastButton
+              />
+              <Typography variant="body2" color="text.secondary">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredDocuments.length)} of {filteredDocuments.length}{" "}
+                documents
+              </Typography>
+            </Stack>
+          )}
         </CardContent>
       </Card>
     </Box>

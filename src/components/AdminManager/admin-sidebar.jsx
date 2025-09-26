@@ -10,7 +10,7 @@ import {
   IconButton,
   Divider,
 } from "@mui/material"
-import { Dashboard, Description, Settings, ChevronLeft, ChevronRight } from "@mui/icons-material"
+import { Dashboard, Description, Settings, ChevronLeft, ChevronRight, SmartToy, TextSnippet } from "@mui/icons-material"
 
 const navigationItems = [
   {
@@ -22,6 +22,16 @@ const navigationItems = [
     id: "documents",
     label: "Document Manager",
     icon: Description,
+  },
+  {
+    id: "prompt-templates",
+    label: "Prompt Templates",
+    icon: TextSnippet,
+  },
+  {
+    id: "chatbot-settings",
+    label: "Chatbot Settings",
+    icon: SmartToy,
   },
   {
     id: "settings",
