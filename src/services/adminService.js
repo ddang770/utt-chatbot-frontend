@@ -5,9 +5,9 @@ const get_document_file_name = () => {
   return axios.get("/admin/document/read");
 }
 
-const save_message = (msg) => {
-  return axios.post("/admin/message", { message: msg })
-}
+// const save_message = (msg) => {
+//   return axios.post("/admin/message", { message: msg })
+// }
 
 const get_stats = ({ startDate, endDate }) => {
   const params = {};
@@ -47,8 +47,16 @@ const viewDocument = async (docId) => {
   });
 };
 
+const getChatbotcfg = () => {
+  return axios.get("/admin/chatbotcfg/get")
+}
+
+const updateChatbotcfg = (config) => {
+  return axios.post("/admin/chatbotcfg/post", { config: config })
+}
+
 export {
   get_document_file_name,
-  save_message, get_stats, uploadDocument, deleteDocument,
-  downloadDocument, viewDocument
+  get_stats, uploadDocument, deleteDocument,
+  downloadDocument, viewDocument, getChatbotcfg, updateChatbotcfg
 }

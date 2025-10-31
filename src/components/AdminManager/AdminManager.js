@@ -8,8 +8,7 @@ import { UserSettings } from "./user-settings"
 import { ChatbotSettings } from "./chatbot-settings"
 import { PromptTemplateManager } from "./prompt-template-manager"
 
-import { get_stats } from "../../services/adminService"
-import { get_document_file_name } from "../../services/adminService";
+import { get_stats, get_document_file_name, getChatbotcfg } from "../../services/adminService"
 
 const theme = createTheme({
   palette: {
@@ -85,6 +84,7 @@ const AdminManager = () => {
   const [statsData, setStatsData] = useState({})
   const [documentData, setDocumentData] = useState([])
   const [refreshKey, setRefreshKey] = useState(0)
+  const [chatbotConfig, setChatbotConfig] = useState({})
 
   // Lấy ngày đầu tháng và ngày hiện tại
   const getDefaultDateRange = () => {
@@ -112,6 +112,7 @@ const AdminManager = () => {
 
   useEffect(() => {
     get_document()
+    getChatbotConfig()
   }, []);
 
   const getRealStats = async ({ startDate, endDate }) => {
@@ -130,6 +131,14 @@ const AdminManager = () => {
     }
   }
 
+  const getChatbotConfig = async () => {
+    let res = await getChatbotcfg()
+    let data = res.data
+    if (data && +data.EC === 0) {
+      setChatbotConfig(data.DT)
+    }
+  }
+
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
@@ -139,7 +148,7 @@ const AdminManager = () => {
       case "prompt-templates":
         return <PromptTemplateManager />
       case "chatbot-settings":
-        return <ChatbotSettings />
+        return <ChatbotSettings chatbotConfig={chatbotConfig} getChatbotConfig={getChatbotConfig} />
       case "settings":
         return <UserSettings />
       default:

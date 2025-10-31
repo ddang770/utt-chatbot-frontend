@@ -15,10 +15,8 @@ import {
 } from "@mui/material"
 import SendIcon from "@mui/icons-material/Send"
 import PersonIcon from "@mui/icons-material/Person"
-//import SmartToyIcon from "@mui/icons-material/SmartToy"
 import "./HomeChat.css"
 import { chat, getUserCookies } from "../../services/chatService"
-import { save_message } from "../../services/adminService"
 
 const theme = createTheme({
   palette: {
@@ -109,7 +107,17 @@ const HomeChat = () => {
       setMessages((prev) => [...prev, aiMessage])
       setIsTyping(false)
 
-      save_message(inputValue)
+      // save_message(inputValue)
+    }
+    if (res && res.data && res.data.EC === 1) {
+      const aiMessage = {
+        id: Date.now() + 1,
+        text: "Xin lỗi, ứng dụng đang gặp chút sự cố...",
+        sender: "ai",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, aiMessage])
+      setIsTyping(false)
     }
 
     // Simulate AI response
@@ -127,7 +135,8 @@ const HomeChat = () => {
 
   const UttBotAvatar = () => {
     return <img
-      src="https://chatbot.utt.edu.vn/_next/image?url=%2Fimages%2Favatabot.jpeg&w=64&q=75"
+      // src="https://chatbot.utt.edu.vn/_next/image?url=%2Fimages%2Favatabot.jpeg&w=64&q=75"
+      src="https://utt.edu.vn/uploads/file-manager/images/Logo%20UTT_logo-40x60-xanh.png"
       alt="UTT AI Assistant"
       style={{
         width: "24px",
@@ -196,7 +205,8 @@ const HomeChat = () => {
             </Typography> */}
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               <img
-                src="https://chatbot.utt.edu.vn/_next/image?url=%2Fimages%2Fbanner_utt_2025.png&w=640&q=75"
+                // src="https://chatbot.utt.edu.vn/_next/image?url=%2Fimages%2Fbanner_utt_2025.png&w=640&q=75"
+                src="https://utt.edu.vn/uploads/images/site/1741107500banner_utt_2025.png"
                 alt="UTT Logo"
                 style={{
                   height: "52px",

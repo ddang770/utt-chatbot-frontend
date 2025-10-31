@@ -16,44 +16,13 @@ import {
   InputLabel,
   Alert,
   Grid,
+  Tooltip,
 } from "@mui/material"
 import { Save as SaveIcon, RestartAlt as ResetIcon, Settings as SettingsIcon } from "@mui/icons-material"
+import { updateChatbotcfg } from "../../services/adminService"
 
-const ChatbotSettings = () => {
-  const [settings, setSettings] = useState({
-    // General Settings
-    botName: "AI Assistant",
-    welcomeMessage: "Hello! How can I help you today?",
-    fallbackMessage: "I apologize, but I don't understand. Could you please rephrase your question?",
-    isEnabled: true,
-
-    // AI Model Settings
-    model: "gpt-3.5-turbo",
-    temperature: 0.7,
-    maxTokens: 150,
-    topP: 1.0,
-
-    // Conversation Settings
-    maxConversationLength: 10,
-    enableContextMemory: true,
-    autoSuggestReplies: true,
-    enableTypingIndicator: true,
-
-    // Response Settings
-    responseDelay: 1000,
-    enableEmojis: true,
-    enableMarkdown: true,
-
-    // Security Settings
-    enableProfanityFilter: true,
-    enableSpamProtection: true,
-    rateLimitPerMinute: 20,
-
-    // Integration Settings
-    enableAnalytics: true,
-    enableLogging: true,
-    logLevel: "info",
-  })
+const ChatbotSettings = ({ chatbotConfig, getChatbotConfig }) => {
+  const [settings, setSettings] = useState(chatbotConfig)
 
   const [saveStatus, setSaveStatus] = useState("")
   const [hasChanges, setHasChanges] = useState(false)
@@ -63,39 +32,22 @@ const ChatbotSettings = () => {
     setHasChanges(true)
   }
 
-  const handleSave = () => {
-    // Here you would typically save to your backend
+  const handleSave = async () => {
     console.log("Saving settings:", settings)
-    setSaveStatus("Settings saved successfully!")
-    setHasChanges(false)
-    setTimeout(() => setSaveStatus(""), 3000)
+    let res = await updateChatbotcfg(settings)
+    if (res && res.data && +res.data.EC === 0) {
+      setSaveStatus("Settings saved successfully!")
+      getChatbotConfig()
+      setSettings(settings)
+      setHasChanges(false)
+    }
+    else {
+      setSaveStatus("Something problem in save handle...")
+    }
   }
 
   const handleReset = () => {
-    // Reset to default values
-    setSettings({
-      botName: "AI Assistant",
-      welcomeMessage: "Hello! How can I help you today?",
-      fallbackMessage: "I apologize, but I don't understand. Could you please rephrase your question?",
-      isEnabled: true,
-      model: "gpt-3.5-turbo",
-      temperature: 0.7,
-      maxTokens: 150,
-      topP: 1.0,
-      maxConversationLength: 10,
-      enableContextMemory: true,
-      autoSuggestReplies: true,
-      enableTypingIndicator: true,
-      responseDelay: 1000,
-      enableEmojis: true,
-      enableMarkdown: true,
-      enableProfanityFilter: true,
-      enableSpamProtection: true,
-      rateLimitPerMinute: 20,
-      enableAnalytics: true,
-      enableLogging: true,
-      logLevel: "info",
-    })
+    setSettings(chatbotConfig)
     setHasChanges(true)
   }
 
@@ -142,37 +94,45 @@ const ChatbotSettings = () => {
             <CardHeader title="General Settings" />
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.isEnabled}
-                      onChange={(e) => handleSettingChange("isEnabled", e.target.checked)}
-                    />
-                  }
-                  label="Enable Chatbot"
-                />
-                <TextField
-                  label="Bot Name"
-                  value={settings.botName}
-                  onChange={(e) => handleSettingChange("botName", e.target.value)}
-                  fullWidth
-                />
-                <TextField
-                  label="Welcome Message"
-                  value={settings.welcomeMessage}
-                  onChange={(e) => handleSettingChange("welcomeMessage", e.target.value)}
-                  multiline
-                  rows={2}
-                  fullWidth
-                />
-                <TextField
-                  label="Fallback Message"
-                  value={settings.fallbackMessage}
-                  onChange={(e) => handleSettingChange("fallbackMessage", e.target.value)}
-                  multiline
-                  rows={2}
-                  fullWidth
-                />
+                {/* <Tooltip title="Turn the chatbot on or off">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.isEnabled}
+                        onChange={(e) => handleSettingChange("isEnabled", e.target.checked)}
+                      />
+                    }
+                    label="Enable Chatbot"
+                  />
+                </Tooltip> */}
+                <Tooltip title="The name displayed to users when they interact with the chatbot">
+                  <TextField
+                    label="Bot Name"
+                    value={settings.botName}
+                    onChange={(e) => handleSettingChange("botName", e.target.value)}
+                    fullWidth
+                  />
+                </Tooltip>
+                <Tooltip title="The first message users see when they start a conversation">
+                  <TextField
+                    label="Welcome Message"
+                    value={settings.welcomeMessage}
+                    onChange={(e) => handleSettingChange("welcomeMessage", e.target.value)}
+                    multiline
+                    rows={2}
+                    fullWidth
+                  />
+                </Tooltip>
+                <Tooltip title="The message shown when the chatbot doesn't understand a user's question">
+                  <TextField
+                    label="Fallback Message"
+                    value={settings.fallbackMessage}
+                    onChange={(e) => handleSettingChange("fallbackMessage", e.target.value)}
+                    multiline
+                    rows={2}
+                    fullWidth
+                  />
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
@@ -184,99 +144,86 @@ const ChatbotSettings = () => {
             <CardHeader title="AI Model Settings" />
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControl fullWidth>
-                  <InputLabel>AI Model</InputLabel>
-                  <Select
-                    value={settings.model}
-                    onChange={(e) => handleSettingChange("model", e.target.value)}
-                    label="AI Model"
-                  >
-                    <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
-                    <MenuItem value="gpt-4">GPT-4</MenuItem>
-                    <MenuItem value="claude-3">Claude 3</MenuItem>
-                  </Select>
-                </FormControl>
+                <Tooltip title="Choose which AI engine to use for generating responses">
+                  <FormControl fullWidth>
+                    <InputLabel>AI Model</InputLabel>
+                    <Select
+                      value={settings.model}
+                      onChange={(e) => handleSettingChange("model", e.target.value)}
+                      label="AI Model"
+                    >
+                      <MenuItem value={settings.model}>GPT-OSS-20B (Free)</MenuItem>
+                      {/* <MenuItem value="openai/gpt-4">GPT-4</MenuItem>
+                      <MenuItem value="openai/gpt-4-turbo">GPT-4 Turbo</MenuItem>
+                      <MenuItem value="anthropic/claude-3">Claude 3</MenuItem> */}
+                    </Select>
+                  </FormControl>
+                </Tooltip>
 
-                <Box>
-                  <Typography gutterBottom>Temperature: {settings.temperature}</Typography>
-                  <Slider
-                    value={settings.temperature}
-                    onChange={(e, value) => handleSettingChange("temperature", value)}
-                    min={0}
-                    max={2}
-                    step={0.1}
-                    marks={[
-                      { value: 0, label: "Focused" },
-                      { value: 1, label: "Balanced" },
-                      { value: 2, label: "Creative" },
-                    ]}
-                  />
+                <Box sx={{ pt: 1, pb: 2 }}>
+                  <Tooltip title="Controls how creative vs. predictable responses are. Low = focused and consistent, High = creative and varied">
+                    <Typography gutterBottom>Temperature: {settings.temperature}</Typography>
+                  </Tooltip>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Slider
+                      value={settings.temperature}
+                      onChange={(e, value) => handleSettingChange("temperature", value)}
+                      min={0}
+                      max={2}
+                      step={0.1}
+                      marks={[
+                        { value: 0, label: "Focused" },
+                        { value: 1, label: "Balanced" },
+                        { value: 2, label: "Creative" },
+                      ]}
+                      sx={{
+                        width: "70%",
+                        "& .MuiSlider-markLabel": {
+                          fontSize: "0.75rem",
+                          whiteSpace: "nowrap",
+                        },
+                      }}
+                    />
+                  </Box>
                 </Box>
 
-                <TextField
-                  label="Max Tokens"
-                  type="number"
-                  value={settings.maxTokens}
-                  onChange={(e) => handleSettingChange("maxTokens", Number.parseInt(e.target.value))}
-                  fullWidth
-                />
-
-                <Box>
-                  <Typography gutterBottom>Top P: {settings.topP}</Typography>
-                  <Slider
-                    value={settings.topP}
-                    onChange={(e, value) => handleSettingChange("topP", value)}
-                    min={0}
-                    max={1}
-                    step={0.1}
+                <Tooltip title="Maximum length of each response. Higher values allow longer responses">
+                  <TextField
+                    label="Max Tokens"
+                    type="number"
+                    value={settings.maxTokens}
+                    onChange={(e) => handleSettingChange("maxTokens", Number.parseInt(e.target.value))}
+                    fullWidth
                   />
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+                </Tooltip>
 
-        {/* Conversation Settings */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
-            <CardHeader title="Conversation Settings" />
-            <CardContent>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <TextField
-                  label="Max Conversation Length"
-                  type="number"
-                  value={settings.maxConversationLength}
-                  onChange={(e) => handleSettingChange("maxConversationLength", Number.parseInt(e.target.value))}
-                  fullWidth
-                  helperText="Number of messages to keep in context"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableContextMemory}
-                      onChange={(e) => handleSettingChange("enableContextMemory", e.target.checked)}
+                <Box sx={{ pt: 1 }}>
+                  <Tooltip title="Controls diversity of responses. Lower = more focused, Higher = more varied">
+                    <Typography gutterBottom>Top P: {settings.topP}</Typography>
+                  </Tooltip>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Slider
+                      value={settings.topP}
+                      onChange={(e, value) => handleSettingChange("topP", value)}
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      sx={{
+                        width: "70%",
+                      }}
                     />
-                  }
-                  label="Enable Context Memory"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.autoSuggestReplies}
-                      onChange={(e) => handleSettingChange("autoSuggestReplies", e.target.checked)}
-                    />
-                  }
-                  label="Auto-suggest Replies"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableTypingIndicator}
-                      onChange={(e) => handleSettingChange("enableTypingIndicator", e.target.checked)}
-                    />
-                  }
-                  label="Show Typing Indicator"
-                />
+                  </Box>
+                </Box>
+
+                <Tooltip title="Number of documents to consider when answering questions">
+                  <TextField
+                    label="Retriever k size"
+                    type="number"
+                    value={settings.retrieverKSize}
+                    onChange={(e) => handleSettingChange("retrieverKSize", Number.parseInt(e.target.value))}
+                    fullWidth
+                  />
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
@@ -288,117 +235,94 @@ const ChatbotSettings = () => {
             <CardHeader title="Response Settings" />
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box>
-                  <Typography gutterBottom>Response Delay: {settings.responseDelay}ms</Typography>
-                  <Slider
-                    value={settings.responseDelay}
-                    onChange={(e, value) => handleSettingChange("responseDelay", value)}
-                    min={0}
-                    max={5000}
-                    step={100}
-                    marks={[
-                      { value: 0, label: "Instant" },
-                      { value: 2500, label: "Natural" },
-                      { value: 5000, label: "Slow" },
-                    ]}
+                <Tooltip title="Whether the chatbot remembers previous messages in the conversation">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.enableContextMemory}
+                        onChange={(e) => handleSettingChange("enableContextMemory", e.target.checked)}
+                      />
+                    }
+                    label="Enable Context Memory"
                   />
-                </Box>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableEmojis}
-                      onChange={(e) => handleSettingChange("enableEmojis", e.target.checked)}
-                    />
-                  }
-                  label="Enable Emojis"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableMarkdown}
-                      onChange={(e) => handleSettingChange("enableMarkdown", e.target.checked)}
-                    />
-                  }
-                  label="Enable Markdown Formatting"
-                />
+                </Tooltip>
+                <Tooltip title="Context memory limit (...todo)">
+                  <TextField
+                    label="Context memory limit"
+                    type="number"
+                    value={settings.contextMemoryLimit}
+                    onChange={(e) => handleSettingChange("contextMemoryLimit", Number.parseInt(e.target.value))}
+                    fullWidth
+                  />
+                </Tooltip>
+                <Tooltip title="Allow the chatbot to use emojis in responses">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.enableEmojis}
+                        onChange={(e) => handleSettingChange("enableEmojis", e.target.checked)}
+                      />
+                    }
+                    label="Enable Emojis"
+                  />
+                </Tooltip>
+                <Tooltip title="Artificial delay before showing the response in milliseconds (makes it feel more natural)">
+                  <TextField
+                    label="Response Delay (ms)"
+                    type="number"
+                    value={settings.responseDelay}
+                    onChange={(e) => handleSettingChange("responseDelay", Number.parseInt(e.target.value))}
+                    fullWidth
+                  />
+                </Tooltip>
+                {/* <Tooltip title="Show a typing animation while the chatbot is thinking">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.enableTypingIndicator}
+                        onChange={(e) => handleSettingChange("enableTypingIndicator", e.target.checked)}
+                      />
+                    }
+                    label="Enable Typing Indicator"
+                  />
+                </Tooltip> */}
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Security Settings */}
+        {/* Logging Settings */}
         <Grid item xs={12} md={6}>
           <Card sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
-            <CardHeader title="Security Settings" />
+            <CardHeader title="Logging Settings" />
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableProfanityFilter}
-                      onChange={(e) => handleSettingChange("enableProfanityFilter", e.target.checked)}
-                    />
-                  }
-                  label="Enable Profanity Filter"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableSpamProtection}
-                      onChange={(e) => handleSettingChange("enableSpamProtection", e.target.checked)}
-                    />
-                  }
-                  label="Enable Spam Protection"
-                />
-                <TextField
-                  label="Rate Limit (per minute)"
-                  type="number"
-                  value={settings.rateLimitPerMinute}
-                  onChange={(e) => handleSettingChange("rateLimitPerMinute", Number.parseInt(e.target.value))}
-                  fullWidth
-                />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Integration Settings */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
-            <CardHeader title="Integration Settings" />
-            <CardContent>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableAnalytics}
-                      onChange={(e) => handleSettingChange("enableAnalytics", e.target.checked)}
-                    />
-                  }
-                  label="Enable Analytics"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.enableLogging}
-                      onChange={(e) => handleSettingChange("enableLogging", e.target.checked)}
-                    />
-                  }
-                  label="Enable Logging"
-                />
-                <FormControl fullWidth>
-                  <InputLabel>Log Level</InputLabel>
-                  <Select
-                    value={settings.logLevel}
-                    onChange={(e) => handleSettingChange("logLevel", e.target.value)}
-                    label="Log Level"
-                  >
-                    <MenuItem value="error">Error</MenuItem>
-                    <MenuItem value="warn">Warning</MenuItem>
-                    <MenuItem value="info">Info</MenuItem>
-                    <MenuItem value="debug">Debug</MenuItem>
-                  </Select>
-                </FormControl>
+                <Tooltip title="Save conversation logs for debugging and monitoring">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.enableLogging}
+                        onChange={(e) => handleSettingChange("enableLogging", e.target.checked)}
+                      />
+                    }
+                    label="Enable Logging"
+                  />
+                </Tooltip>
+                <Tooltip title="Debug = most detailed, Info = general info, Warn = warnings only, Error = errors only">
+                  <FormControl fullWidth>
+                    <InputLabel>Log Level</InputLabel>
+                    <Select
+                      value={settings.logLevel}
+                      onChange={(e) => handleSettingChange("logLevel", e.target.value)}
+                      label="Log Level"
+                    >
+                      {/* <MenuItem value="debug">Debug</MenuItem> */}
+                      <MenuItem value="info">Info</MenuItem>
+                      {/* <MenuItem value="warn">Warn</MenuItem>
+                      <MenuItem value="error">Error</MenuItem> */}
+                    </Select>
+                  </FormControl>
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
