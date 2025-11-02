@@ -235,7 +235,7 @@ const ChatbotSettings = ({ chatbotConfig, getChatbotConfig }) => {
             <CardHeader title="Response Settings" />
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Tooltip title="Whether the chatbot remembers previous messages in the conversation">
+                {/* <Tooltip title="Whether the chatbot remembers previous messages in the conversation">
                   <FormControlLabel
                     control={
                       <Switch
@@ -245,7 +245,7 @@ const ChatbotSettings = ({ chatbotConfig, getChatbotConfig }) => {
                     }
                     label="Enable Context Memory"
                   />
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip title="Context memory limit (...todo)">
                   <TextField
                     label="Context memory limit"

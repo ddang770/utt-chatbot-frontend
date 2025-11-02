@@ -95,6 +95,10 @@ const AdminManager = () => {
     // Format YYYY-MM-DD
     const format = (d) => d.toISOString().slice(0, 10);
 
+    // console.log({
+    //   startDate: format(firstDay),
+    //   endDate: format(now),
+    // })
     return {
       startDate: format(firstDay),
       endDate: format(now),
@@ -121,6 +125,7 @@ const AdminManager = () => {
     if (data && +data.EC === 0) {
       setStatsData(data.DT)
     }
+    //console.log("check data statsData", statsData)
   }
 
   const get_document = async () => {

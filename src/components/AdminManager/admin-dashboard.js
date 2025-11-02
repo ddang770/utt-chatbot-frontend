@@ -36,96 +36,96 @@ import { Line, Bar } from "react-chartjs-2"
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, ChartTooltip, Legend)
 
-const mockDataWithDates = {
-  users: [
-    { date: "2025-09-15", count: 45 },
-    { date: "2025-09-16", count: 52 },
-    { date: "2025-09-17", count: 38 },
-    { date: "2025-09-18", count: 67 },
-    { date: "2025-09-19", count: 73 },
-    { date: "2025-09-20", count: 58 },
-    { date: "2025-09-21", count: 42 },
-    { date: "2025-09-22", count: 89 },
-    { date: "2025-09-23", count: 95 },
-    { date: "2025-09-24", count: 76 },
-  ],
-  messages: [
-    { date: "2025-09-15", count: 234 },
-    { date: "2025-09-16", count: 456 },
-    { date: "2025-09-17", count: 123 },
-    { date: "2025-09-18", count: 789 },
-    { date: "2025-09-19", count: 567 },
-    { date: "2025-09-20", count: 345 },
-    { date: "2025-09-21", count: 678 },
-    { date: "2025-09-22", count: 890 },
-    { date: "2025-09-23", count: 432 },
-    { date: "2025-09-24", count: 654 },
-  ],
-  documents: [
-    { date: "2025-09-15", count: 3 },
-    { date: "2025-09-16", count: 5 },
-    { date: "2025-09-17", count: 2 },
-    { date: "2025-09-18", count: 8 },
-    { date: "2025-09-19", count: 4 },
-    { date: "2025-09-20", count: 6 },
-    { date: "2025-09-21", count: 1 },
-    { date: "2025-09-22", count: 9 },
-    { date: "2025-09-23", count: 7 },
-    { date: "2025-09-24", count: 3 },
-  ],
-}
+// const mockDataWithDates = {
+//   users: [
+//     { date: "2025-09-15", count: 45 },
+//     { date: "2025-09-16", count: 52 },
+//     { date: "2025-09-17", count: 38 },
+//     { date: "2025-09-18", count: 67 },
+//     { date: "2025-09-19", count: 73 },
+//     { date: "2025-09-20", count: 58 },
+//     { date: "2025-09-21", count: 42 },
+//     { date: "2025-09-22", count: 89 },
+//     { date: "2025-09-23", count: 95 },
+//     { date: "2025-09-24", count: 76 },
+//   ],
+//   messages: [
+//     { date: "2025-09-15", count: 234 },
+//     { date: "2025-09-16", count: 456 },
+//     { date: "2025-09-17", count: 123 },
+//     { date: "2025-09-18", count: 789 },
+//     { date: "2025-09-19", count: 567 },
+//     { date: "2025-09-20", count: 345 },
+//     { date: "2025-09-21", count: 678 },
+//     { date: "2025-09-22", count: 890 },
+//     { date: "2025-09-23", count: 432 },
+//     { date: "2025-09-24", count: 654 },
+//   ],
+//   documents: [
+//     { date: "2025-09-15", count: 3 },
+//     { date: "2025-09-16", count: 5 },
+//     { date: "2025-09-17", count: 2 },
+//     { date: "2025-09-18", count: 8 },
+//     { date: "2025-09-19", count: 4 },
+//     { date: "2025-09-20", count: 6 },
+//     { date: "2025-09-21", count: 1 },
+//     { date: "2025-09-22", count: 9 },
+//     { date: "2025-09-23", count: 7 },
+//     { date: "2025-09-24", count: 3 },
+//   ],
+// }
 
-const mockMessagesWithDates = [
-  {
-    id: 1,
-    user: "John Doe",
-    message: "How can I reset my password?",
-    timestamp: "2024-01-24T10:30:00Z",
-    avatar: "JD",
-  },
-  {
-    id: 2,
-    user: "Sarah Wilson",
-    message: "The chatbot is not responding to my queries about pricing.",
-    timestamp: "2024-01-24T10:25:00Z",
-    avatar: "SW",
-  },
-  {
-    id: 3,
-    user: "Mike Johnson",
-    message: "Great service! The AI helped me find exactly what I needed.",
-    timestamp: "2024-01-24T10:22:00Z",
-    avatar: "MJ",
-  },
-  {
-    id: 4,
-    user: "Emily Chen",
-    message: "Can you add support for multiple languages?",
-    timestamp: "2024-01-23T15:18:00Z",
-    avatar: "EC",
-  },
-  {
-    id: 5,
-    user: "David Brown",
-    message: "The document upload feature is working perfectly now.",
-    timestamp: "2024-01-23T14:15:00Z",
-    avatar: "DB",
-  },
-  {
-    id: 6,
-    user: "Lisa Wang",
-    message: "The new update looks amazing!",
-    timestamp: "2024-01-22T16:45:00Z",
-    avatar: "LW",
-  },
-  {
-    id: 7,
-    user: "Tom Anderson",
-    message: "Having trouble with file uploads.",
-    timestamp: "2024-01-22T11:30:00Z",
-    avatar: "TA",
-  },
-]
+// const mockMessagesWithDates = [
+//   {
+//     id: 1,
+//     user: "John Doe",
+//     message: "How can I reset my password?",
+//     timestamp: "2024-01-24T10:30:00Z",
+//     avatar: "JD",
+//   },
+//   {
+//     id: 2,
+//     user: "Sarah Wilson",
+//     message: "The chatbot is not responding to my queries about pricing.",
+//     timestamp: "2024-01-24T10:25:00Z",
+//     avatar: "SW",
+//   },
+//   {
+//     id: 3,
+//     user: "Mike Johnson",
+//     message: "Great service! The AI helped me find exactly what I needed.",
+//     timestamp: "2024-01-24T10:22:00Z",
+//     avatar: "MJ",
+//   },
+//   {
+//     id: 4,
+//     user: "Emily Chen",
+//     message: "Can you add support for multiple languages?",
+//     timestamp: "2024-01-23T15:18:00Z",
+//     avatar: "EC",
+//   },
+//   {
+//     id: 5,
+//     user: "David Brown",
+//     message: "The document upload feature is working perfectly now.",
+//     timestamp: "2024-01-23T14:15:00Z",
+//     avatar: "DB",
+//   },
+//   {
+//     id: 6,
+//     user: "Lisa Wang",
+//     message: "The new update looks amazing!",
+//     timestamp: "2024-01-22T16:45:00Z",
+//     avatar: "LW",
+//   },
+//   {
+//     id: 7,
+//     user: "Tom Anderson",
+//     message: "Having trouble with file uploads.",
+//     timestamp: "2024-01-22T11:30:00Z",
+//     avatar: "TA",
+//   },
+// ]
 
 const chartOptions = {
   responsive: true,
@@ -150,13 +150,18 @@ const chartOptions = {
   },
 }
 
-export function AdminDashboard(props) {
+export function AdminDashboard({ statsData = {}, dateRange = {}, setDateRange }) {
   //const [dateRange, setDateRange] = useState(props.dateRange)
   const [refreshKey, setRefreshKey] = useState(0)
   const [messagesPage, setMessagesPage] = useState(1)
   const [messagesPerPage] = useState(3) // Show 3 messages per page
-  const { dateRange, setDateRange } = props;
   const [pendingDateRange, setPendingDateRange] = useState(dateRange);
+
+  // safe fallbacks so hooks (useMemo) always operate on defined values
+  const usersArr = Array.isArray(statsData.users) ? statsData.users : []
+  const messagesArr = Array.isArray(statsData.messages) ? statsData.messages : []
+  const documentsArr = statsData.documents ? statsData.documents : 0
+  const recentMessagesArr = Array.isArray(statsData.dataMessagesWithDates) ? statsData.dataMessagesWithDates : []
 
   const filteredData = useMemo(() => {
     const filterByDateRange = (data, dateField = "date") => {
@@ -171,15 +176,20 @@ export function AdminDashboard(props) {
       })
     }
 
-    const filteredUsers = filterByDateRange(mockDataWithDates.users)
-    const filteredMessages = filterByDateRange(mockDataWithDates.messages)
-    const filteredDocuments = filterByDateRange(mockDataWithDates.documents)
-    const filteredRecentMessages = filterByDateRange(mockMessagesWithDates, "timestamp")
+    const filteredUsers = filterByDateRange(usersArr)
+    const filteredMessages = filterByDateRange(messagesArr)
+    const filteredRecentMessages = filterByDateRange(recentMessagesArr, "timestamp")
+
+    // const filteredUsers = filterByDateRange(mockDataWithDates.users)
+    // const filteredMessages = filterByDateRange(mockDataWithDates.messages)
+    // const filteredDocuments = filterByDateRange(mockDataWithDates.documents)
+    // const filteredRecentMessages = filterByDateRange(mockMessagesWithDates, "timestamp")
 
     // Calculate stats from filtered data
     const totalUsers = filteredUsers.reduce((sum, item) => sum + item.count, 0)
     const totalMessages = filteredMessages.reduce((sum, item) => sum + item.count, 0)
-    const totalDocuments = filteredDocuments.reduce((sum, item) => sum + item.count, 0)
+    // const totalDocuments = filteredDocuments.reduce((sum, item) => sum + item.count, 0)
+    const totalDocuments = documentsArr
     const todayUsers = filteredUsers.length > 0 ? filteredUsers[filteredUsers.length - 1].count : 0
 
     // Prepare Chart.js data
@@ -232,6 +242,16 @@ export function AdminDashboard(props) {
       totalMessagesPages,
     }
   }, [dateRange, refreshKey, messagesPage, messagesPerPage])
+
+  // Nếu chưa có data thì hiện loading và dừng render phần còn lại
+  if (!statsData || Object.keys(statsData).length === 0) {
+    return (
+      <Box sx={{ p: 4, display: "flex", alignItems: "center", gap: 2 }}>
+        {/* <CircularProgress size={24} /> */}
+        <Typography>Loading dashboard...</Typography>
+      </Box>
+    )
+  }
 
   const handlePendingDateChange = (field) => async (event) => {
     setPendingDateRange((prev) => ({
